@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>초기자본 계산기 테스트</title></head>
+<body style="font-family:system-ui;padding:24px">
+<h1>초기자본 계산기 자동 검사 (UT)</h1>
+<ol id="out"></ol><p id="sum"></p>
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const T = [];
+const t = (id, name, fn) => { let ok = false, msg = ''; try { ok = fn(); } catch (e) { msg = e.message; } T.push([id, name, ok, msg]); };
+const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const S = FX_CAD_KRW_DAILY, TODAY = '2026-09-19';
+
+// R-01
+const now = latestRate(S);
+t('UT-01a', '최신 환율 {2026-09-18, 990.76}, 시계열 256행', () => now.date === '2026-09-18' && now.rate === 990.76 && S.length === 256);
+const p = planCosts(990.76, 4500000, '2027-03-01');
+t('UT-01b', '항목 366,334 / 990,760 / 1,250,000 / 2,476,900', () => eq(p.items.map(i => i.krw), [366334, 990760, 1250000, 2476900]));
+t('UT-01b', '총액 5,083,994원 · 차액 -583,994 · 생활비 참고 1,709,061 · 발급 시작일 2027-02-22', () => p.total === 5083994 && p.diff === -583994 && p.livingKrw === 1709061 && p.proofFrom === '2027-02-22');
+t('UT-01b', 'CAD 합계 3,869.75 → 지금 3,833,994', () => p.cadSum === 3869.75 && p.cadSumKrw === 3833994);
+t('UT-01b', '화면 문구: 헤드·부족 문장', () => headlineText(p.total) === '예상 초기자본은 5,083,994원이에요.' && verdictText(4500000, p.diff) === '보유 자금 4,500,000원보다 583,994원 부족해요.');
+t('UT-01c', '보유 6,000,000 → +916,006(여유) 문장', () => { const q = planCosts(990.76, 6000000, '2027-03-01'); return q.diff === 916006 && verdictText(6000000, q.diff) === '보유 자금 6,000,000원으로 916,006원이 남아요.'; });
+t('UT-01c', '보유 5,083,994 → 0(딱 맞음) 문장', () => { const q = planCosts(990.76, 5083994, '2027-03-01'); return q.diff === 0 && verdictText(5083994, q.diff) === '보유 자금과 딱 맞아요.'; });
+const rr = rateRange(S), rc = rangeCompare(S, p.cadSum, now.rate);
+t('UT-01d', '최저 968.97(2026-09-11) · 최고 1,109.99(2026-06-05)', () => rr.min.rate === 968.97 && rr.min.date === '2026-09-11' && rr.max.rate === 1109.99 && rr.max.date === '2026-06-05');
+t('UT-01d', 'CAD 3,869.75 기준 최저 3,749,672 · 최고 4,295,384 · 지금 3,833,994', () => rc.low.krw === 3749672 && rc.high.krw === 4295384 && rc.now === 3833994);
+t('UT-01', '표시 형식: 5,083,994원 · 990.76 · 1,109.99 · 3,869.75', () => formatKrw(5083994) === '5,083,994원' && formatRate(990.76) === '990.76' && formatRate(1109.99) === '1,109.99' && formatCad(3869.75) === '3,869.75');
+
+// R-02
+t('UT-02', "validateFunds('') · ('   ') → 「보유 자금(원)을 입력해 주세요.」", () => ['', '   '].every(v => { const r = validateFunds(v); return r.ok === false && r.message === '보유 자금(원)을 입력해 주세요.'; }));
+t('UT-02', "validateDate('') → 「출국 예정일을 선택해 주세요.」", () => { const r = validateDate('', TODAY); return r.ok === false && r.message === '출국 예정일을 선택해 주세요.'; });
+
+// R-03
+t('UT-03a', "'오만' '-5' 'abc' '450만' → 안내 문장", () => ['오만', '-5', 'abc', '450만'].every(v => { const r = validateFunds(v); return r.ok === false && r.message === '보유 자금은 0 이상의 숫자만 입력해 주세요. (예: 4500000)'; }));
+t('UT-03b', "'0' → 통과 값 0 · '4,500,000' → 4500000", () => validateFunds('0').ok === true && validateFunds('0').value === 0 && validateFunds('4,500,000').value === 4500000);
+t('UT-03c', '과거·어제 → 안내, 오늘 → 통과', () => validateDate('2020-01-01', TODAY).message === '출국 예정일은 오늘 이후 날짜로 선택해 주세요.' && validateDate('2026-09-18', TODAY).ok === false && validateDate('2026-09-19', TODAY).ok === true);
+
+// R-04
+t('UT-04', 'latestRate([]) · (undefined) → null, 예외 없음', () => latestRate([]) === null && latestRate(undefined) === null);
+t('UT-04', '데이터 실패 문구', () => MSG.noData === '환율 데이터를 불러오지 못했어요. 페이지를 새로고침해 주세요.');
+
+const o = document.getElementById('out'); let pass = 0;
+for (const [id, n, ok, m] of T) { if (ok) pass++; const li = document.createElement('li'); li.textContent = (ok ? 'PASS' : 'FAIL') + ' · ' + id + ' · ' + n + (m ? ' · ' + m : ''); li.style.color = ok ? 'green' : 'red'; o.appendChild(li); }
+document.getElementById('sum').textContent = pass + '/' + T.length + ' 통과';
+document.title = pass + '/' + T.length;
+</script>
+</body></html>

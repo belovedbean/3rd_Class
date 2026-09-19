@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>캐나다 워홀 초기자본 계산기</title>
+<style>
+:root{--ink:#1d1d1f;--muted:#6e6e73;--parchment:#f5f5f7;--hair:#e0e0e0;--accent:#0066cc;--accent-focus:#0071e3;--bad:#b3261e}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:17px;line-height:1.47;letter-spacing:-.01em;color:var(--ink);background:var(--parchment);word-break:keep-all;overflow-wrap:anywhere}
+.wrap{max-width:720px;margin:0 auto;padding:32px 22px 64px}
+.back{font-size:14px;color:var(--accent);text-decoration:none}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.15;font-weight:600;letter-spacing:-.02em;margin:14px 0 8px}
+.lead{color:var(--muted);margin:0 0 24px}
+.card{background:#fff;border:1px solid var(--hair);border-radius:18px;padding:24px;margin-bottom:16px}
+label{display:block;font-weight:600;margin-bottom:6px}
+input{width:100%;font:inherit;padding:12px 14px;border:1px solid #c7c7cc;border-radius:12px;background:#fff;color:var(--ink)}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent-focus);outline-offset:2px}
+input[aria-invalid="true"]{border-color:var(--bad)}
+.field{margin-bottom:18px}
+.error{min-height:1.4em;color:var(--bad);font-size:15px;margin:6px 0 0;font-weight:600}
+button.btn,a.btn{display:inline-block;padding:12px 26px;border-radius:9999px;background:var(--accent);color:#fff;font:inherit;font-size:18px;border:0;cursor:pointer;text-decoration:none;text-align:center}
+button.btn:active,a.btn:active{transform:scale(.95)}
+a.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px}
+button.btn{width:100%}
+#result .hint{color:var(--muted);margin:0}
+.head{font-size:clamp(26px,5vw,36px);font-weight:600;letter-spacing:-.02em;line-height:1.15;margin:0 0 6px}
+.verdict{font-size:20px;font-weight:600;margin-bottom:18px}
+.verdict.short{color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:16px;margin-bottom:12px}
+th,td{padding:12px 6px;border-top:1px solid var(--hair);text-align:left;vertical-align:top}
+thead th{border-top:0;font-size:13px;color:var(--muted);font-weight:600}
+td.r,th.r{text-align:right}
+.sub{font-size:13px;color:var(--muted)}
+.badge{display:inline-block;padding:1px 9px;border-radius:9999px;font-size:12px;font-weight:600;vertical-align:middle}
+.badge.off{border:1px solid var(--accent);color:var(--accent)}
+.badge.as{background:#e8e8ed;color:#424245}
+.note{font-size:14px;color:var(--muted);margin:8px 0}
+footer{font-size:12px;color:var(--muted);margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 소개 페이지</a>
+  <h1>캐나다 워홀 초기자본 계산기</h1>
+  <p class="lead">보유 자금과 출국 예정일을 넣으면 초기자본 총액과 항목별로 언제 얼마가 나가는지 보여 드려요.</p>
+
+  <form class="card" id="calcForm" novalidate>
+    <div class="field">
+      <label for="funds">보유 자금(원)</label>
+      <input id="funds" name="funds" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 4500000" aria-describedby="fundsError">
+      <p class="error" id="fundsError" role="alert"></p>
+    </div>
+    <div class="field">
+      <label for="depDate">출국 예정일</label>
+      <input id="depDate" name="depDate" type="date" aria-describedby="dateError">
+      <p class="error" id="dateError" role="alert"></p>
+    </div>
+    <button class="btn" type="submit" id="calcBtn">내 초기자본 계산하기</button>
+  </form>
+
+  <section class="card" id="result" aria-live="polite" aria-label="계산 결과"></section>
+
+  <footer>수업 과제 데모 · 투자 판단 근거 아님 · 이민·금융 자문이 아닙니다. 캐나다 정부 수수료·요건은 바뀔 수 있으니 사용 전 공식 페이지를 다시 확인하세요.</footer>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
