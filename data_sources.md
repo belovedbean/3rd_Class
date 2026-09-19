@@ -4,13 +4,13 @@
 
 |번호|값과 단위|기준 시점|기관·문서|링크|말해주는 것|말해주지 않는 것|확인|
 |---|---|---|---|---|---|---|---|
-|D1|CAD/KRW 환율 990.76원 (1캐나다달러=990.76원)|2026-09-18|Frankfurter API (유럽중앙은행 ECB 기준환율)|https://api.frankfurter.dev/v1/latest?base=CAD&symbols=KRW|오늘 은행 기준환율에 가까운 매매기준율 수준|은행별 실제 살 때 환율(현찰/전신환) 스프레드는 없음|☐ 직접 열어 봄|
-|D2|캐나다 워킹홀리데이(IEC) 참가자 필수 증빙자금 CAN$2,500(첫 3개월 체류비)|페이지 최종 업데이트 2025-11-17|캐나다 이민난민시민권부(IRCC), canada.ca|https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/prepare-arrival.html|출국 1주일 이내 발급한 잔고증명서에 있어야 하는 최소 금액|무급 인턴(Co-op) 참가자는 전체 체류비를 추가로 더 보여줘야 함(이 값에 미포함)|☐ 직접 열어 봄|
-|D3|IEC 신청·발급 비용 합계 CAD 369.75 (참가비 184.75 + 오픈 워크퍼밋 발급비 100 + 바이오메트릭 85)|2025-12-01부터 적용된 금액|캐나다 이민난민시민권부(IRCC), canada.ca|https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/apply-work-permit.html|워킹홀리데이 카테고리 기준 신청 단계에서 내는 정부 수수료 합계|보험료·항공권·생활비는 포함 안 됨. Young Professional/Co-op은 워크퍼밋 발급비(100) 제외돼 269.75|☐ 직접 열어 봄|
+|D1|CAD/KRW 환율 990.76원 (1캐나다달러=990.76원)|2026-09-18|Frankfurter API (유럽중앙은행 ECB 기준환율)|https://api.frankfurter.dev/v1/latest?base=CAD&symbols=KRW|오늘 은행 기준환율에 가까운 매매기준율 수준|은행별 실제 살 때 환율(현찰/전신환) 스프레드는 없음|☐ 직접 열어 봄 (AI가 열어 990.76·2026-09-18 확인함)|
+|D2|캐나다 워킹홀리데이(IEC) 참가자 필수 증빙자금 CAN$2,500(첫 3개월 체류비)|페이지 최종 업데이트 2025-11-17|캐나다 이민난민시민권부(IRCC), canada.ca|https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/prepare-arrival.html|출국 1주일 이내 발급한 잔고증명서에 있어야 하는 최소 금액|무급 인턴(Co-op) 참가자는 전체 체류비를 추가로 더 보여줘야 함(이 값에 미포함)|☐ 직접 열어 봄 (AI가 열어 CAN$2,500·1주일 이내·2025-11-17 확인함)|
+|D3|IEC 신청·발급 비용 합계 CAD 369.75 (참가비 184.75 + 오픈 워크퍼밋 발급비 100 + 바이오메트릭 85)|참가비 184.75는 2025-12-01 인상(이전 179.75). 수수료 목록 페이지 2026-07-02 수정, 인상 안내 페이지 2026-04-30 수정, 신청 페이지 2026-05-28 수정|캐나다 이민난민시민권부(IRCC): 수수료 목록 · 수수료 변경 안내 · IEC 신청 페이지|참가비 184.75와 바이오메트릭 85: https://ircc.canada.ca/english/information/fees/fees.asp · 인상 시점: https://ircc.canada.ca/english/information/fees/fee-changes.asp · 워크퍼밋 발급비 100: https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/apply-work-permit.html|워킹홀리데이 카테고리 기준 신청 단계에서 내는 정부 수수료 합계|보험료·항공권·생활비는 포함 안 됨. Young Professional/Co-op은 워크퍼밋 발급비(100) 제외돼 269.75. 신청 페이지는 참가비 숫자를 직접 보여 주지 않고 수수료 목록을 안내함|☐ 직접 열어 봄 (AI가 세 페이지를 열어 값 확인함)|
 
 ## 기간별 변화 — 최근 12개월 CAD/KRW 최고·최저
 
-- 기간: 2025-09-18 ~ 2026-09-18 (261 영업일, Frankfurter API 일별 시계열)
+- 기간: 2025-09-18 ~ 2026-09-18 (256 영업일, Frankfurter API 일별 시계열, 링크: https://api.frankfurter.dev/v1/2025-09-18..2026-09-18?base=CAD&symbols=KRW — AI가 전체 시계열을 받아 최저·최고·차액을 직접 계산해 확인함)
 - 최저 968.97원 (2026-09-11) · 최고 1,109.99원 (2026-06-05)
 - 계산식: 증빙자금 필요 원화 = 990.76원 → CAN$2,500 × 최저/최고 환율
   - 최저 시점 환전: 2,500 × 968.97 = **2,422,425원**
@@ -23,7 +23,10 @@
 
 - https://api.frankfurter.dev/v1/latest?base=CAD&symbols=KRW (D1)
 - https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/prepare-arrival.html (D2)
-- https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/apply-work-permit.html (D3)
+- https://ircc.canada.ca/english/information/fees/fees.asp (D3: 참가비 184.75 · 바이오메트릭 85)
+- https://ircc.canada.ca/english/information/fees/fee-changes.asp (D3: 2025-12-01 인상, 179.75 → 184.75)
+- https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/apply-work-permit.html (D3: 워크퍼밋 발급비 100)
+- https://api.frankfurter.dev/v1/2025-09-18..2026-09-18?base=CAD&symbols=KRW (기간별 변화 시계열)
 
 ## 참고용 추정치 (근거표에 넣지 않음 — 민간 자료 집계, 서비스에 그대로 쓰지 말 것)
 
