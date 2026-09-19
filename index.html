@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>캐나다 워홀 초기자본 계산기 · 소개</title>
+<style>
+:root{
+  --ink:#1d1d1f;--muted:#6e6e73;--canvas:#ffffff;--parchment:#f5f5f7;--hair:#e0e0e0;
+  --tile:#272729;--tile-2:#2a2a2c;--on-dark:#ffffff;--muted-dark:#cccccc;
+  --accent:#0066cc;--accent-focus:#0071e3;--accent-dark:#2997ff;--bad:#b3261e
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:17px;line-height:1.47;letter-spacing:-.01em;color:var(--ink);background:var(--canvas);word-break:keep-all;overflow-wrap:anywhere}
+.tile{padding:80px 0}
+.tile.light{background:var(--canvas)}
+.tile.parch{background:var(--parchment)}
+.tile.dark{background:var(--tile);color:var(--on-dark)}
+.wrap{max-width:980px;margin:0 auto;padding:0 22px}
+.center{text-align:center}
+.label{font-size:14px;font-weight:600;color:var(--accent);margin:0 0 10px;letter-spacing:0}
+.dark .label{color:var(--accent-dark)}
+h1{font-size:clamp(34px,7vw,56px);line-height:1.1;font-weight:600;letter-spacing:-.02em;margin:0 0 16px}
+h2{font-size:clamp(26px,4.6vw,40px);line-height:1.15;font-weight:600;letter-spacing:-.015em;margin:0 0 18px}
+h3{font-size:19px;line-height:1.3;font-weight:600;margin:0 0 6px}
+p{margin:0 0 12px}
+.lead{font-size:clamp(19px,2.6vw,24px);line-height:1.4;color:var(--muted);font-weight:400;max-width:640px}
+.center .lead{margin-left:auto;margin-right:auto}
+.dark .lead,.dark .muted{color:var(--muted-dark)}
+.muted{color:var(--muted)}
+.small{font-size:14px;line-height:1.45}
+.fine{font-size:12px;line-height:1.4;color:var(--muted)}
+.dark .fine{color:var(--muted-dark)}
+a{color:var(--accent)}
+.dark a{color:var(--accent-dark)}
+.btn{display:inline-block;padding:12px 26px;border-radius:9999px;background:var(--accent);color:#fff;font-size:18px;font-weight:400;text-decoration:none;margin-top:14px;border:0;letter-spacing:-.01em}
+.btn:active{transform:scale(.95)}
+.btn:focus-visible,a:focus-visible{outline:2px solid var(--accent-focus);outline-offset:3px}
+.btn.off{background:#d2d2d7;color:#515154;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:16px;margin:28px 0}
+.card{background:var(--canvas);border:1px solid var(--hair);border-radius:18px;padding:24px}
+.card .k{font-size:14px;color:var(--muted)}
+.card .num{font-size:clamp(30px,5vw,40px);font-weight:600;letter-spacing:-.02em;line-height:1.1;margin:8px 0}
+.card .src{font-size:12px;color:var(--muted);line-height:1.4}
+.chart{width:100%;height:auto;display:block;background:var(--canvas);border:1px solid var(--hair);border-radius:18px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th,td{padding:12px 8px;border-top:1px solid var(--hair);text-align:left;vertical-align:top}
+thead th{border-top:0;font-size:13px;color:var(--muted);font-weight:600}
+td.r,th.r{text-align:right}
+.panel{background:var(--canvas);border:1px solid var(--hair);border-radius:18px;padding:24px}
+.dark .panel{background:var(--tile-2);border-color:#3a3a3c}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:10px;margin:18px 0;padding:0;list-style:none}
+.steps li{background:var(--tile);border:1px solid #3a3a3c;border-radius:14px;padding:12px;font-size:15px;line-height:1.35}
+.steps li b{display:block;font-size:12px;color:var(--muted-dark);font-weight:600;margin-bottom:4px}
+.steps li.low{border:2px solid var(--on-dark)}
+.steps li.low b{color:var(--on-dark)}
+.callout{margin-top:14px;padding:14px 16px;border-radius:14px;background:var(--tile);border:1px solid #3a3a3c;font-size:16px}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px;margin:26px 0}
+.flow>div{padding:20px;border-radius:18px;border:1px solid var(--hair);background:var(--parchment)}
+.preview{background:var(--parchment);border-radius:18px;padding:28px;margin-top:8px}
+.preview .head{font-size:clamp(26px,4.6vw,40px);font-weight:600;letter-spacing:-.02em;line-height:1.15;margin:8px 0 6px}
+.preview .short{font-size:20px;font-weight:600;color:var(--bad);margin-bottom:18px}
+.preview table{background:var(--canvas);border-radius:14px}
+.badge{display:inline-block;padding:1px 9px;border-radius:9999px;font-size:12px;font-weight:600;vertical-align:middle}
+.badge.off{border:1px solid var(--accent);color:var(--accent)}
+.badge.as{background:#e8e8ed;color:#424245}
+.status{color:var(--muted)}
+footer.tile{padding:48px 0 64px}
+@media (max-width:640px){.tile{padding:56px 0}.card,.panel,.preview{padding:18px}}
+</style>
+</head>
+<body>
+
+<section class="tile light center" id="s1">
+  <div class="wrap">
+    <p class="label">① 한 줄 소개</p>
+    <h1>글마다 다른 캐나다 워홀 비용,<br>공식 금액으로 한 번에 계산하세요</h1>
+    <p class="lead">보유 자금과 출국 예정일, 두 가지만 넣으면 초기자본 총액과 항목별로 언제 얼마가 나가는지 보여 주는 한 화면 계산기입니다.</p>
+    <a class="btn" href="#demo">계산기 미리 보기</a>
+  </div>
+</section>
+
+<section class="tile parch" id="s2">
+  <div class="wrap">
+    <p class="label">② 데이터로 본 문제</p>
+    <h2>같은 증빙자금 CAN$2,500이 환전 시점에 따라 최근 1년간 352,550원 차이 났습니다</h2>
+    <div class="cards">
+      <div class="card"><div class="k">1캐나다달러</div><div class="num">990.76원</div><div class="src">2026-09-18 · Frankfurter API(유럽중앙은행 기준환율)</div></div>
+      <div class="card"><div class="k">필수 증빙자금 · 출국 1주일 이내 잔고증명</div><div class="num">CAN$2,500</div><div class="src">캐나다 이민난민시민권부 · 페이지 수정일 2025-11-17</div></div>
+      <div class="card"><div class="k">신청·발급비 합계</div><div class="num">CAD 369.75</div><div class="src">참가비 184.75 + 워크퍼밋 발급비 100 + 바이오메트릭 85 · 수수료 목록 2026-07-02</div></div>
+    </div>
+
+    <h3>최근 1년 CAD/KRW 추이 (1캐나다달러당 원)</h3>
+    <svg id="chart" class="chart" viewBox="0 0 640 240" role="img" aria-label="최근 1년 캐나다달러 원화 환율 선 그래프. 최저 968.97원, 최고 1,109.99원"></svg>
+    <p class="fine" id="chartNote" style="margin-top:8px">기간 2025-09-18 ~ 2026-09-18 · 출처: Frankfurter API(유럽중앙은행 기준환율)</p>
+
+    <h3 style="margin-top:32px">기간별 변화 — 증빙자금 CAN$2,500을 환전한다면</h3>
+    <div class="panel">
+      <table>
+        <thead><tr><th>시점</th><th class="r">환율</th><th class="r">필요한 원화</th></tr></thead>
+        <tbody>
+          <tr><td>최근 1년 최저 (2026-09-11)</td><td class="r">968.97원</td><td class="r">2,422,425원</td></tr>
+          <tr><td>최근 1년 최고 (2026-06-05)</td><td class="r">1,109.99원</td><td class="r">2,774,975원</td></tr>
+          <tr><td><b>차이</b></td><td class="r">+14.55%</td><td class="r"><b>352,550원</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:16px"><b>해석</b> 같은 CAD 금액이라도 언제 환전하느냐에 따라 원화로는 35만 원 넘게 차이가 났습니다.</p>
+    <p class="muted"><b>한계</b> 은행 창구의 실제 환율·수수료·우대율은 포함하지 않은 기준환율 기준입니다.</p>
+    <p class="fine">출처: <a href="https://api.frankfurter.dev/v1/latest?base=CAD&amp;symbols=KRW">Frankfurter API</a> · <a href="https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/prepare-arrival.html">IRCC 출국 준비</a> · <a href="https://ircc.canada.ca/english/information/fees/fees.asp">IRCC 수수료 목록</a></p>
+  </div>
+</section>
+
+<section class="tile dark" id="s3">
+  <div class="wrap">
+    <p class="label">③ 누구의 어떤 순간</p>
+    <h2>퇴사 3주차, 밤마다 "캐나다 워홀 비용"을 검색하다 지쳐 가는 찬빈</h2>
+    <div class="panel">
+      <h3>찬빈 · 29세 · 직장인이었다가 퇴사 3주차</h3>
+      <p class="muted">실수령 월 240만 원이었고 지금은 수입이 없습니다. 적금 450만 원. 금융 지식이 없고 게으른 성향입니다. <span class="small">(학생이 정한 가상 인물 · 가설)</span></p>
+      <p><b>지금 쓰는 방법</b> 블로그·카페 글을 몇 개 훑어보다 머릿속으로 대충 계산합니다.</p>
+      <ol class="steps" aria-label="찬빈의 5단계 여정과 감정 점수(가설)">
+        <li><b>1 · 감정 2</b>막막함을 느낀다</li>
+        <li class="low"><b>2 · 감정 1 · 최저점</b>정보를 찾는다</li>
+        <li><b>3 · 감정 3</b>내 상황을 넣는다</li>
+        <li><b>4 · 감정 3</b>초기자본·지출 흐름을 본다</li>
+        <li><b>5 · 감정 4</b>절차 계획을 받는다</li>
+      </ol>
+      <div class="callout">가장 곤란한 순간(가설): 글마다 금액이 달라(공식 최소 증빙 CAN$2,500 vs 블로그 권장 CAD 4,000~6,000) 뭐가 맞는지 몰라 "일단 나중에 하자"로 창을 닫는 순간</div>
+    </div>
+    <p class="fine" style="margin-top:14px">출처: persona.md · journey_map.md (감정 점수와 생각은 모두 가설, 인터뷰 전)</p>
+  </div>
+</section>
+
+<section class="tile light" id="demo">
+  <div class="wrap">
+    <p class="label">④ F-01 시연</p>
+    <h2>입력은 두 칸. 결과는 큰 숫자 하나로 먼저 보여 줍니다</h2>
+    <div class="flow" aria-label="기존 방식과 F-01 흐름">
+      <div><h3>기존</h3><p class="small muted" style="margin:0">블로그 여러 개 → 머릿속 계산 → 금액이 제각각</p></div>
+      <div><h3>F-01</h3><p class="small muted" style="margin:0">보유 자금·출국 예정일 입력 → 공식 금액 자동 환산</p></div>
+      <div><h3>결과</h3><p class="small muted" style="margin:0">총액 · 부족/여유 · 항목별 나가는 시점</p></div>
+    </div>
+
+    <div class="preview" aria-label="계산 결과 미리보기(샘플)">
+      <p class="small muted"><b>미리보기</b> · 샘플 입력: 보유 자금 4,500,000원, 출국 예정일 2027-03-01</p>
+      <div class="head">예상 초기자본은 5,083,994원이에요.</div>
+      <div class="short">보유 자금 4,500,000원보다 583,994원 부족해요.</div>
+      <table>
+        <thead><tr><th>항목</th><th>나가는 시점</th><th class="r">원화</th></tr></thead>
+        <tbody>
+          <tr><td>신청·발급비 <span class="badge off">공식</span><br><span class="small muted">CAD 369.75</span></td><td>초청 수락 후 20일 안</td><td class="r">366,334원</td></tr>
+          <tr><td>여행자보험 <span class="badge as">가정값</span><br><span class="small muted">CAD 1,000</span></td><td>출국 전</td><td class="r">990,760원</td></tr>
+          <tr><td>항공권 <span class="badge as">가정값</span></td><td>출국 전</td><td class="r">1,250,000원</td></tr>
+          <tr><td>증빙 잔고 <span class="badge off">공식</span><br><span class="small muted">CAN$2,500 · 통장에 있어야 하는 돈</span></td><td>출국 1주일 이내(2027-02-22 이후) 발급한 잔고증명서</td><td class="r">2,476,900원</td></tr>
+        </tbody>
+      </table>
+      <p class="fine" style="margin-top:12px">적용 환율: 1캐나다달러 = 990.76원 (2026-09-18, Frankfurter API · 유럽중앙은행 기준환율). 보험·항공권·생활비는 공식 금액이 아니라 가정값이에요.</p>
+    </div>
+
+    <div class="center"><span class="btn off" role="button" aria-disabled="true">계산기 준비 중 · 다음 단계에서 연결</span></div>
+  </div>
+</section>
+
+<section class="tile parch" id="s5">
+  <div class="wrap">
+    <p class="label">⑤ 테스트 결과</p>
+    <h2>구현 후 실제 결과를 채웁니다</h2>
+    <div class="panel">
+      <table>
+        <thead><tr><th>요구사항</th><th class="r">상태</th></tr></thead>
+        <tbody>
+          <tr><td>R-01 정상 · 총액 5,083,994원, 583,994원 부족</td><td class="r status">구현 전 · 미실행</td></tr>
+          <tr><td>R-02 빈값 · 칸 아래 안내, 결과 숨김</td><td class="r status">구현 전 · 미실행</td></tr>
+          <tr><td>R-03 오류 · 문자·음수·과거 날짜 안내</td><td class="r status">구현 전 · 미실행</td></tr>
+          <tr><td>R-04 데이터 실패 · 환율 못 읽을 때 안내</td><td class="r status">구현 전 · 미실행</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fine" style="margin-top:12px">미실행은 통과가 아닙니다. test.html 자동 검사와 배포 주소 확인 뒤에 채웁니다.</p>
+  </div>
+</section>
+
+<section class="tile light" id="s6">
+  <div class="wrap">
+    <p class="label">⑥ 활용 방안 · 현업 적용 · 다음 개선</p>
+    <h2>준비 도우미로 이어질 수 있습니다</h2>
+    <div class="cards">
+      <div class="card"><h3>활용 방안</h3><p class="small muted" style="margin:0">워홀 준비생이 밤에 검색하다 만나는 카페·영상 댓글·공식 인포센터 게시판에서 링크로 쓰는 초기자본 계산 도구 (가설).</p></div>
+      <div class="card"><h3>현업 적용</h3><p class="small muted" style="margin:0">환전·여행자보험·항공권 제휴 서비스가 준비 단계 안내로 연결하는 구조 (가설, 제휴 가능 여부는 리서치 필요).</p></div>
+      <div class="card"><h3>다음 개선</h3><p class="small muted" style="margin:0">절차 A-Z 체크리스트와 날짜별 계획(F-02) · 현지 생활비·시세 참고(F-03, 공식 근거 확보 후) · 기한 알림 · 다른 나라 확장(뉴질랜드).</p></div>
+    </div>
+    <p class="fine">출처: business_plan.md ⑤~⑦ · mvp_rice.md</p>
+  </div>
+</section>
+
+<footer class="tile parch">
+  <div class="wrap">
+    <p class="fine"><b>⑦</b> 수업 과제 데모 · 투자 판단 근거 아님 · 이민·금융 자문이 아닙니다. 캐나다 정부 수수료·요건은 바뀔 수 있으니 사용 전 공식 페이지를 다시 확인하세요. 보험·항공권·생활비는 공식 금액이 아닌 가정값입니다.</p>
+  </div>
+</footer>
+
+<noscript><p class="fine" style="max-width:980px;margin:0 auto;padding:0 22px 20px">이 그래프는 자바스크립트가 있어야 보입니다.</p></noscript>
+<script src="data.js"></script>
+<script>
+(function(){
+  var svg=document.getElementById('chart'),note=document.getElementById('chartNote');
+  var rows=(typeof FX_CAD_KRW_DAILY!=='undefined'&&FX_CAD_KRW_DAILY.length)?FX_CAD_KRW_DAILY:[];
+  if(!rows.length){note.textContent='환율 데이터를 불러오지 못했어요. 페이지를 새로고침해 주세요.';return}
+  var W=640,H=240,L=56,R=16,T=20,B=34,min=Infinity,max=-Infinity,imin=0,imax=0,i;
+  for(i=0;i<rows.length;i++){var v=rows[i].cadKrw;if(v<min){min=v;imin=i}if(v>max){max=v;imax=i}}
+  var lo=Math.floor(min/50)*50,hi=Math.ceil(max/50)*50;
+  function x(k){return L+(W-L-R)*k/(rows.length-1)}
+  function y(v){return T+(H-T-B)*(hi-v)/(hi-lo)}
+  var s='';
+  for(var g=lo;g<=hi;g+=50){s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="#e0e0e0" stroke-width="1"/><text x="'+(L-6)+'" y="'+(y(g)+4)+'" font-size="11" text-anchor="end" fill="#6e6e73">'+g+'</text>'}
+  var pts=[];for(i=0;i<rows.length;i++){pts.push(x(i).toFixed(1)+','+y(rows[i].cadKrw).toFixed(1))}
+  s+='<polyline points="'+pts.join(' ')+'" fill="none" stroke="#0066cc" stroke-width="2.5" stroke-linejoin="round"/>';
+  s+='<circle cx="'+x(imax)+'" cy="'+y(max)+'" r="5" fill="#1d1d1f"/><text x="'+Math.min(x(imax)+8,W-R-110)+'" y="'+(y(max)-8)+'" font-size="12" fill="#1d1d1f" font-weight="600">최고 '+max.toLocaleString('ko-KR')+'원 ('+rows[imax].date+')</text>';
+  s+='<circle cx="'+x(imin)+'" cy="'+y(min)+'" r="5" fill="#1d1d1f"/><text x="'+Math.min(x(imin)+8,W-R-118)+'" y="'+(y(min)+18)+'" font-size="12" fill="#1d1d1f" font-weight="600">최저 '+min.toLocaleString('ko-KR')+'원 ('+rows[imin].date+')</text>';
+  s+='<text x="'+L+'" y="'+(H-10)+'" font-size="11" fill="#6e6e73">'+rows[0].date+'</text><text x="'+(W-R)+'" y="'+(H-10)+'" font-size="11" text-anchor="end" fill="#6e6e73">'+rows[rows.length-1].date+'</text>';
+  svg.innerHTML=s;
+})();
+</script>
+</body>
+</html>
